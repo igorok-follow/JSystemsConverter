@@ -9,13 +9,15 @@ public class Converter {
     private double doubleOfStr;
     private char[] symbols;
     private int[] degrees;
-    private String string;
+    private StringBuilder string = new StringBuilder();
     private HashMap<Integer, String> map;
+    private String[] literals =
+            {"\u2080", "\u2081", "\u2082", "\u2083", "\u2084", "\u2085", "\u2086", "\u2087", "\u2088", "\u2089"};
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Number which you want to convert: ");
-        String number = scanner.next();
+        String number = scanner.nextLine();
         System.out.print("Initial system: ");
         int initialSystem = scanner.nextInt();
         System.out.print("Final system: ");
@@ -23,13 +25,7 @@ public class Converter {
         new Converter().convertType(number, initialSystem, finalSystem);
     }
 
-    private Converter() {
-        map = new HashMap<>();
-        String literal = "208";
-        for (int i = 0; i < 10; i++) {
-            map.put(i, literal + i);
-        }
-    }
+    private Converter() {}
 
     private void convertType(String number, int initialSystem, int finalSystem)  {
         symbols = number.toCharArray();
@@ -38,34 +34,35 @@ public class Converter {
 
         if (finalSystem == 10) {
             toDecimalSystem(number, initialSystem);
-            System.out.println("\n" + result + "\u2081\u2080");
+            System.out.println(result + literals[1] + literals[0]);
         } else if (finalSystem >1 && finalSystem < 10) {
-            toDecimalSystem(number, initialSystem);
-            System.out.println("start while");
-            while (result % finalSystem != 0 || result % finalSystem != 1) {
-                result = result / finalSystem;
-                string += String.valueOf(result % finalSystem);
-                System.out.println(string);
+            int test = toDecimalSystem(number, initialSystem);
+            if (test > finalSystem) {
+                while (test > 0) {
+                    string.append(test % finalSystem);
+                    test = test / finalSystem;
+                }
+            } else {
+                string.append(test % finalSystem);
             }
 
-            System.out.println(string + map.get(finalSystem));
+            string.reverse();
+            System.out.println(string + literals[finalSystem]);
         }
     }
 
-    private void toDecimalSystem(String number, int initialSystem) {
-        System.out.println("start decimal ");
+    private int toDecimalSystem(String number, int initialSystem) {
         if (doubleOfStr % 2 == 0 || doubleOfStr % 2 == 1) {
-            System.out.println("if passed");
             reverseArray(symbols);
-            System.out.println("array reserved");
+
             for (int i = 0; i < symbols.length; i++) {
                 degrees[i] = i;
             }
 
-            System.out.println("start write result");
             for (int i = 0; i < symbols.length; i++) {
                 result += Integer.parseInt(String.valueOf(symbols[i])) * Math.pow(initialSystem, degrees[i]);
             }
+            return result;
         } else {
             System.out.println("with double");
             //если переданное число с плавающей точкой, доделать!!!
@@ -74,6 +71,7 @@ public class Converter {
             firstPart = parts[0];
             secondPart = parts[1];
             System.out.println(firstPart + "," + secondPart);
+            return result;
         }
     }
 
